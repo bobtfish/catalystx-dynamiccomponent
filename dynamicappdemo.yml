@@ -1,0 +1,4 @@
+---
+name: DynamicAppDemo
+Model::One:
+    class: SomeModelClass

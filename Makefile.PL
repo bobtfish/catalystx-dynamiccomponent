@@ -5,7 +5,8 @@ use inc::Module::Install;
 name 'DynamicAppDemo';
 all_from 'lib/DynamicAppDemo.pm';
 
-requires 'Catalyst::Runtime' => '5.80002';
+requires 'Catalyst::Model::Adaptor';
+requires 'Catalyst::Runtime' => '5.80001';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'YAML';
 

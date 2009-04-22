@@ -9,6 +9,10 @@ use Catalyst qw/
 
 extends 'Catalyst';
 
+with qw/
+    CatalystX::ModelsFromConfig
+/;
+
 our $VERSION = '0.01';
 
 __PACKAGE__->config( name => 'DynamicAppDemo' );
