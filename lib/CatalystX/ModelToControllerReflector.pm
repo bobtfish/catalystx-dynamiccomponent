@@ -5,9 +5,9 @@ use namespace::clean -except => 'meta';
 with 'CatalystX::DynamicComponent' 
     => { alias => { _setup_dynamic_component => '_setup_dynamic_controller' } };
 
-requires 'setup_actionts';
+requires 'setup_components';
 
-before 'setup_actions' => sub { shift->_setup_dynamic_controllers(@_); };
+after 'setup_components' => sub { shift->_setup_dynamic_controllers(@_); };
 
 sub _setup_dynamic_controllers {
     my ($app) = @_;
@@ -35,6 +35,8 @@ sub _reflect_model_to_controller {
     my $meta = $controller->meta;
     $meta->make_mutable; # Dirty, I should build the class, add the methods, then
                          # last of all make it a component
+    $meta->remove_method('COMPONENT');
+    $meta->superclasses('DynamicAppDemo::ControllerBase');
 
     my $methods = $model->meta->get_method_map;
     foreach my $method_name (keys %$methods) {
