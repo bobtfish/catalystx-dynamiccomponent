@@ -9,8 +9,11 @@ use Catalyst qw/
 
 extends 'Catalyst';
 
+# Ordering important. :)
 with qw/
+    CatalystX::DynamicComponent
     CatalystX::ModelsFromConfig
+    CatalystX::ModelToControllerReflector
 /;
 
 our $VERSION = '0.01';

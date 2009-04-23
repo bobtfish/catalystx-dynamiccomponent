@@ -8,6 +8,11 @@ requires qw/
     setup_component
 /;
 
+# Note method reaming - allows user to modify my setup_dynamic_component without being
+#                       forced to do it globally.
+with 'CatalystX::DynamicComponent' 
+    => { alias => { _setup_dynamic_component => '_setup_dynamic_model' } };
+
 after 'setup_components' => sub { shift->_setup_dynamic_models(@_); };
 
 sub _setup_dynamic_models {
@@ -22,30 +27,6 @@ sub _setup_dynamic_models {
         my $model_class_name = $app_name . '::' . $model_name;
         $app->_setup_dynamic_model( $model_class_name, $model_hash->{$model_name} );
     }
-}
-
-sub _setup_dynamic_model {
-    my ($app, $name, $config) = @_;
-    
-    my $meta = Moose->init_meta( for_class => $name );
-    $meta->superclasses('Catalyst::Model');
-    
-    $meta->add_method( 
-
-      COMPONENT 
-            => sub {
-        my ($model_class_name, $app, $args) = @_;
-        
-        my $class = delete $args->{class};
-        Class::MOP::load_class($class);
-        
-        $class->new($args);
-    });
-
-    $meta->make_immutable;
-
-    my $instance = $app->setup_component($name);
-    $app->components->{ $name } = $instance;
 }
 
 1;
