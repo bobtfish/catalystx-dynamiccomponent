@@ -3,7 +3,7 @@ use Moose;
 use Moose::Util qw/find_meta/;
 use namespace::clean -except => 'meta';
 
-# Should not need attributes here, but what the hell..
+# You need attributes still for _DISPATCH and friends.
 BEGIN { extends 'Catalyst::Controller' }
 
 around get_action_methods => sub {
