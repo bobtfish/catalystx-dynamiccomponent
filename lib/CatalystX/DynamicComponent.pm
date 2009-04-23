@@ -3,7 +3,7 @@ use Moose::Role;
 use namespace::clean -excpept => 'meta';
 
 sub _setup_dynamic_component {
-    my ($app, $name, $config) = @_;
+    my ($app, $name, $config, $component_method) = @_;
 
     my $appclass = blessed($app) || $app;
     my $type = $name;
@@ -13,17 +13,7 @@ sub _setup_dynamic_component {
     my $meta = Moose->init_meta( for_class => $name );
     $meta->superclasses('Catalyst::' . $type);
 
-    $meta->add_method(
-
-      COMPONENT
-            => sub {
-        my ($component_class_name, $app, $args) = @_;
-
-        my $class = delete $args->{class};
-        Class::MOP::load_class($class);
-
-        $class->new($args);
-    });
+    $meta->add_method( COMPONENT => $component_method );
 
     $meta->make_immutable;
 
