@@ -36,7 +36,7 @@ sub _reflect_model_to_controller {
     $meta->make_mutable; # Dirty, I should build the class, add the methods, then
                          # last of all make it a component
     $meta->remove_method('COMPONENT');
-    $meta->superclasses('DynamicAppDemo::ControllerBase');
+    $meta->superclasses($app . '::ControllerBase');
 
     my $methods = $model->meta->get_method_map;
     foreach my $method_name (keys %$methods) {
