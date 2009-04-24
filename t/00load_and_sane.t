@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 
+# FIXME - Not sure if this does what I think it does, test..
+
 use FindBin qw/$Bin/;
 use lib "$Bin/../lib";
 
