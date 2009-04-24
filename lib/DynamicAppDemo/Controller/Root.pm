@@ -8,6 +8,8 @@ BEGIN { extends 'Catalyst::Controller' }
 
 __PACKAGE__->config->{namespace} = '';
 
+sub root : Chained('/') PathPath() CaptureArgs() {}
+
 sub end : ActionClass('RenderView') {}
 
 __PACKAGE__->meta->make_immutable;
