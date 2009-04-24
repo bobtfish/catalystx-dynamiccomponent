@@ -34,9 +34,15 @@ sub _reflect_model_to_controller {
     });
     my $meta = $controller->meta;
     $meta->make_mutable; # Dirty, I should build the class, add the methods, then
-                         # last of all make it a component
-    $meta->remove_method('COMPONENT');
-    $meta->superclasses($app . '::ControllerBase');
+                         # last of all make it a component. The only reason it works
+                         # like this is that I wrote the simple thing for the model
+                         # code, abstracted _just_ enough to make it fly with this
+                         # dirty hack, then stopped. EVERY TIME YOU DO THIS KITTENS DIE
+    $meta->remove_method('COMPONENT'); # OMFG This is fucking insane. FIXME!
+    $meta->superclasses($app . '::ControllerBase'); # Wrong namespace, should be config
+                                                    # and we force it to do a role to
+                                                    # add our crap, allowing the user
+                                                    # to overlay functionality..
 
     my $methods = $model->meta->get_method_map;
     foreach my $method_name (keys %$methods) {
