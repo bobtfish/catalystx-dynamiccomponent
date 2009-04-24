@@ -1,7 +1,6 @@
 package DynamicAppDemo::Controller::FakeExample;
 use Moose;
-use namespace::clean -except => 'meta'; # N.B. namespace clean cest tres important
-                                        #      as this package is introspected, a lot!
+use namespace::autoclean;
 
 BEGIN { extends 'DynamicAppDemo::ControllerBase' }
 

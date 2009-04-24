@@ -1,6 +1,6 @@
 package SomeModelClass;
 use Moose;
-use namespace::clean -except => 'meta';
+use namespace::autoclean;
 
 # Note trivial calling convention.
 # Apply MX::Method::Signatures and MX::Types::Structured to be less lame.

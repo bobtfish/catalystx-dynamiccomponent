@@ -1,6 +1,7 @@
 package CatalystX::ModelsFromConfig;
 use Moose::Role;
 use Catalyst::Model::Adaptor ();
+use namespace::autoclean;
 
 requires qw/
     config

@@ -1,5 +1,6 @@
 package DynamicAppDemo::Controller::Root;
 use Moose;
+use namespace::autoclean;
 
 # Note - need old style actions
 # Note - do not extend general controller base class, which messes with

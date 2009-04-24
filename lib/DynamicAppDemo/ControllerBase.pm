@@ -1,7 +1,7 @@
 package DynamicAppDemo::ControllerBase;
 use Moose;
 use Moose::Util qw/find_meta/;
-use namespace::clean -except => 'meta';
+use namespace::autoclean;
 
 # You need attributes still for _DISPATCH and friends.
 BEGIN { extends 'Catalyst::Controller' }

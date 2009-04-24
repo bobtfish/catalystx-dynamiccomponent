@@ -1,6 +1,6 @@
 package CatalystX::DynamicComponent;
 use Moose::Role;
-use namespace::clean -excpept => 'meta';
+use namespace::autoclean;
 
 sub _setup_dynamic_component {
     my ($app, $name, $config, $component_method) = @_;
