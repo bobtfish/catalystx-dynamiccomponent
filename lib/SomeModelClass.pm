@@ -1,5 +1,6 @@
 package SomeModelClass;
 use Moose;
+use CatalystX::ControllerGeneratingModel;
 use namespace::autoclean;
 
 # Note trivial calling convention.
@@ -8,10 +9,10 @@ use namespace::autoclean;
 # Introspection should only reflect methods which satisfy the calling convention
 # This is left as an exercise to the reader. :)
 
-sub say_hello {
+command say_hello => sub {
     my ($self, $name) = @_;
     return("Hello $name");
-}
+};
 
 __PACKAGE__->meta->make_immutable;
 
