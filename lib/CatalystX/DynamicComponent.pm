@@ -12,12 +12,17 @@ parameter 'pre_immutable_hook' => (
     predicate => 'has_pre_immutable_hook',
 );
 
+parameter 'COMPONENT' => (
+    isa => 'CodeRef',
+    predicate => 'has_custom_component_method',
+);
+
 role {
     my $p = shift;
     my $name = $p->name;
-    my $pre_immutable_hook = $p->pre_immutable_hook if $p->has_pre_immutable_hook;
+    my $pre_immutable_hook = $p->pre_immutable_hook;
     method $name => sub {
-        my ($app, $name, $config, $component_method) = @_;
+        my ($app, $name, $config) = @_;
 
         my $appclass = blessed($app) || $app;
         my $type = $name;
@@ -26,8 +31,10 @@ role {
 
         my $meta = Moose->init_meta( for_class => $name );
         $meta->superclasses('Catalyst::' . $type);
-        $meta->add_method( COMPONENT => $component_method );
-        $app->$pre_immutable_hook($meta) if $pre_immutable_hook;
+        if ($p->has_custom_component_method) {
+            $meta->add_method(COMPONENT => $p->COMPONENT);
+        }
+        $app->$pre_immutable_hook($meta) if $p->has_pre_immutable_hook;
         $meta->make_immutable;
 
         my $instance = $app->setup_component($name);
