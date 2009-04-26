@@ -4,6 +4,7 @@ use namespace::autoclean;
 
 with 'CatalystX::DynamicComponent' => {
     name => '_setup_dynamic_controller',
+    pre_immutable_hook => '_setup_dynamic_controller_meta',
 };
 
 requires 'setup_components';
@@ -37,11 +38,6 @@ sub _reflect_model_to_controller {
                          # like this is that I wrote the simple thing for the model
                          # code, abstracted _just_ enough to make it fly with this
                          # dirty hack, then stopped. EVERY TIME YOU DO THIS KITTENS DIE
-    $meta->superclasses($app . '::ControllerBase'); # Wrong namespace, should be config
-                                                    # and we force it to do a role to
-                                                    # add our crap, allowing the user
-                                                    # to overlay functionality..
-
     my $methods = $model->meta->get_method_map;
     foreach my $method_name (keys %$methods) {
         $controller->meta->add_method(
@@ -51,6 +47,15 @@ sub _reflect_model_to_controller {
         );
     }
     $meta->make_immutable;
+}
+
+sub _setup_dynamic_controller_meta {
+    my ($app, $meta) = @_;
+    # Wrong namespace, should be config
+    # and we force it to do a role to
+    # add our crap, allowing the user
+    # to overlay functionality..
+    $meta->superclasses($app . '::ControllerBase', $meta->superclasses);
 }
 
 sub generate_reflected_controller_action_method {
