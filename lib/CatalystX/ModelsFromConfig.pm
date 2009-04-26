@@ -11,8 +11,9 @@ requires qw/
 
 # Note method reaming - allows user to modify my setup_dynamic_component without being
 #                       forced to do it globally.
-with 'CatalystX::DynamicComponent' 
-    => { alias => { _setup_dynamic_component => '_setup_dynamic_model' } };
+with 'CatalystX::DynamicComponent' => {
+    name => '_setup_dynamic_model',
+};
 
 after 'setup_components' => sub { shift->_setup_dynamic_models(@_); };
 

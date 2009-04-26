@@ -1,25 +1,39 @@
 package CatalystX::DynamicComponent;
-use Moose::Role;
+use MooseX::Role::Parameterized;
 use namespace::autoclean;
 
-sub _setup_dynamic_component {
-    my ($app, $name, $config, $component_method) = @_;
+parameter 'name' => (
+    isa => 'Str',
+    required => 1,
+);
 
-    my $appclass = blessed($app) || $app;
-    my $type = $name;
-    $type =~ s/^${appclass}:://; # FIXME - I think there is shit in C::Utils to do this.
-    $type =~ s/::.*$//;
+parameter 'pre_immutable_hook' => (
+    isa => 'Str',
+    predicate => 'has_pre_immutable_hook',
+);
 
-    my $meta = Moose->init_meta( for_class => $name );
-    $meta->superclasses('Catalyst::' . $type);
+role {
+    my $p = shift;
+    my $name = $p->name;
+    my $pre_immutable_hook = $p->pre_immutable_hook if $p->has_pre_immutable_hook;
+    method $name => sub {
+        my ($app, $name, $config, $component_method) = @_;
 
-    $meta->add_method( COMPONENT => $component_method );
+        my $appclass = blessed($app) || $app;
+        my $type = $name;
+        $type =~ s/^${appclass}:://; # FIXME - I think there is shit in C::Utils to do this.
+        $type =~ s/::.*$//;
 
-    $meta->make_immutable;
+        my $meta = Moose->init_meta( for_class => $name );
+        $meta->superclasses('Catalyst::' . $type);
+        $meta->add_method( COMPONENT => $component_method );
+        $app->$pre_immutable_hook($meta) if $pre_immutable_hook;
+        $meta->make_immutable;
 
-    my $instance = $app->setup_component($name);
-    $app->components->{ $name } = $instance;
-}
+        my $instance = $app->setup_component($name);
+        $app->components->{ $name } = $instance;
+    };
+};
 
 1;
 

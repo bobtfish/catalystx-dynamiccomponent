@@ -2,8 +2,9 @@ package CatalystX::ModelToControllerReflector;
 use Moose::Role;
 use namespace::autoclean;
 
-with 'CatalystX::DynamicComponent' 
-    => { alias => { _setup_dynamic_component => '_setup_dynamic_controller' } };
+with 'CatalystX::DynamicComponent' => {
+    name => '_setup_dynamic_controller',
+};
 
 requires 'setup_components';
 
