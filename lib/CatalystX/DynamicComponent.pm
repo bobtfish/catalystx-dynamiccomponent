@@ -22,7 +22,7 @@ role {
     my $name = $p->name;
     my $pre_immutable_hook = $p->pre_immutable_hook;
     method $name => sub {
-        my ($app, $name, $config) = @_;
+        my ($app, $name, $config, $methods) = @_;
 
         my $appclass = blessed($app) || $app;
         my $type = $name;
@@ -31,10 +31,17 @@ role {
 
         my $meta = Moose->init_meta( for_class => $name );
         $meta->superclasses('Catalyst::' . $type);
+        
         if ($p->has_custom_component_method) {
             $meta->add_method(COMPONENT => $p->COMPONENT);
         }
+        
         $app->$pre_immutable_hook($meta) if $p->has_pre_immutable_hook;
+        
+        $methods ||= {};
+        foreach my $name (keys %$methods) {
+            $meta->add_method($name => $methods->{$name});
+        }
         $meta->make_immutable;
 
         my $instance = $app->setup_component($name);
