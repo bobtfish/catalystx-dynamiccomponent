@@ -2,7 +2,8 @@ package DynamicAppDemo::Controller::FakeExample;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'DynamicAppDemo::ControllerBase' }
+BEGIN { extends 'Catalyst::Controller' }
+with 'CatalystX::ModelToControllerReflector::ControllerRole';
 
 # This is a fake controller.
 

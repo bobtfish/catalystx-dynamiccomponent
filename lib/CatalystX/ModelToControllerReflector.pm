@@ -46,11 +46,10 @@ sub _reflect_model_to_controller {
 
 sub _setup_dynamic_controller_meta {
     my ($app, $meta) = @_;
-    # Wrong namespace, should be config
-    # and we force it to do a role to
-    # add our crap, allowing the user
-    # to overlay functionality..
-    $meta->superclasses($app . '::ControllerBase', $meta->superclasses);
+    
+    Moose::Util::apply_all_roles(
+        $meta => 'CatalystX::ModelToControllerReflector::ControllerRole'
+    );
 }
 
 sub generate_reflected_controller_action_method {
