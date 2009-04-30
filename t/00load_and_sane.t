@@ -4,11 +4,11 @@ use warnings;
 # FIXME - Not sure if this does what I think it does, test..
 
 use FindBin qw/$Bin/;
-use lib "$Bin/../lib";
+use lib "$Bin/lib";
 
 use List::MoreUtils qw/any/;
 use Module::Find;
-setmoduledirs("$Bin/../lib");
+setmoduledirs("$Bin/../lib", "$Bin/lib");
 
 use Test::More tests => 4;
 use Test::Exception;

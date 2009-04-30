@@ -2,6 +2,8 @@ package CatalystX::DynamicComponent;
 use MooseX::Role::Parameterized;
 use namespace::autoclean;
 
+our $VERSION = 0.000001;
+
 parameter 'name' => (
     isa => 'Str',
     required => 1,

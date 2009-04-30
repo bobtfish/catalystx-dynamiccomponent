@@ -2,6 +2,9 @@ use strict;
 use warnings;
 use Test::More tests => 3;
 
+use FindBin qw/$Bin/;
+use lib "$Bin/lib";
+
 use DynamicAppDemo;
 
 # Naughty, should make an app instance.
