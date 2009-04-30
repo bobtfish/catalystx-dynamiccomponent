@@ -5,7 +5,7 @@ BEGIN { $ENV{CATALYST_ENGINE} ||= 'CGI' }
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib";
+use lib "$FindBin::Bin/../lib", "$FindBin/../t/lib";
 use DynamicAppDemo;
 
 DynamicAppDemo->run;

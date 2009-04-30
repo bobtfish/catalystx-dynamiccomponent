@@ -11,7 +11,7 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 use FindBin;
-use lib "$FindBin::Bin/../lib";
+use lib "$FindBin::Bin/../lib", "$FindBin::Bin/../t/lib";
 
 my $debug             = 0;
 my $fork              = 0;
