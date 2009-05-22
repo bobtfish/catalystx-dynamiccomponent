@@ -1,0 +1,57 @@
+TODO, or the plan for making this stuff work right.
+
+The goals:
+
+1/ I want to be able to specify a Controller base class, like
+   Catalyst::Controller::MessageDriven. That's where my
+   message-handling actually lives, so I want to build controllers
+   based on that, or whichever other class.
+
+2/ We need a calling convention for the model implementations - in the
+   absence of defined interfaces this should be simple unblessed data,
+   but if we do have an interface, we should be able to put proper
+   constraints on it.
+
+3/ Given generated controllers where I expose a bunch of methods from
+   the actual model classes, there needs to be some way to control
+   which methods are dispatchable - "very public", if you like. 
+
+4/ I'd like to be able to write down an "interface", consisting of a
+   set of messages my app is willing to handle, and have the framework
+   (or the controller base class, probably) reject messages that
+   aren't in that set.
+
+5/ I'd also like to be able to say in that interface definition what
+   types of object those methods expect as a payload. 
+
+6/ It'd be nice if exceptions from model methods were caught by the
+   framework and converted into messages representing the error - 
+   i.e. to set an error status, and return the text of the exception.
+
+All these things should be based on configuration. So, we've got
+something to say what classes expose methods, which of those methods
+are dispatchable, and which types are expected.
+
+Possible Implementation
+
+We can provide a number of controller base classes, for a number of
+different message styles: YAML with type-tags, JSON bare hashes,
+etc. These should be selectable by configuration, as a default
+controller class plus overrides for specific controllers.
+
+The calling convention to model methods should be the "payload". That
+might be a bare hashref for simple messages, or a blessed object of
+some app-specific type if the message format contains first-class
+objects, like tagged YAML.
+
+The "interfaces" should be Roles, which don't provide any methods but
+which "need" methods to be implemented. We then use the "needed"
+methods as the set of dispatchable methods, given if we compile OK, we
+know that the model class has all the required methods. 
+
+Types are implemented as type signatures on role methods, and we copy
+them onto the actual methods on the model class at compile time. 
+
+Exception handling probably needs to be behaviour from the controller
+base class, so that it can be specific to the type of message
+serialization being used.
