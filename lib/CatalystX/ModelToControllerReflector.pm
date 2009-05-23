@@ -15,7 +15,7 @@ after 'setup_components' => sub { shift->_setup_dynamic_controllers(@_); };
 sub _setup_dynamic_controllers {
     my ($app) = @_;
     my @model_names = grep { /::Model::/ } keys %{ $app->components };
-    
+
     foreach my $model_name (@model_names) {
         $app->_reflect_model_to_controller( $model_name, $app->components->{$model_name} );
     }
@@ -46,7 +46,7 @@ sub _reflect_model_to_controller {
 
 sub _setup_dynamic_controller_meta {
     my ($app, $meta) = @_;
-    
+
     Moose::Util::apply_all_roles(
         $meta => 'CatalystX::ModelToControllerReflector::ControllerRole'
     );

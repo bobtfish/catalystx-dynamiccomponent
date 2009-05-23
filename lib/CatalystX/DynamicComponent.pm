@@ -33,13 +33,13 @@ role {
 
         my $meta = Moose->init_meta( for_class => $name );
         $meta->superclasses('Catalyst::' . $type);
-        
+
         if ($p->has_custom_component_method) {
             $meta->add_method(COMPONENT => $p->COMPONENT);
         }
-        
+
         $app->$pre_immutable_hook($meta) if $p->has_pre_immutable_hook;
-        
+
         $methods ||= {};
         foreach my $name (keys %$methods) {
             $meta->add_method($name => $methods->{$name});
