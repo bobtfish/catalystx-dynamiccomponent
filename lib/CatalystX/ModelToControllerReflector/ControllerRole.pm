@@ -7,8 +7,8 @@ sub get_reflected_action_methods {
     my ($self) = @_;
     my $meta = find_meta($self);
 
-    return  map { $self->_smash_method_attributes($_) }
-            grep { ! /^(_|new|meta|get_action_methods)$/ }
+    map { $self->_smash_method_attributes($_) }
+            grep { ! /^(_.*|new|meta|get_(reflected_)?action_methods)$/ }
                                         # FIXME - giant turd, right there.
             $meta->get_method_list;    # we need to apply a role to the
                                        # metaclass of each method we generate,

@@ -1,11 +1,11 @@
 package CatalystX::ModelToControllerReflector;
 use Moose::Role;
 use Moose::Util qw/does_role/;
+use List::MoreUtils qw/uniq/;
 use namespace::autoclean;
 
 with 'CatalystX::DynamicComponent' => {
     name => '_setup_dynamic_controller',
-    pre_immutable_hook => '_setup_dynamic_controller_meta',
 };
 
 requires 'setup_components';
@@ -43,15 +43,11 @@ sub _reflect_model_to_controller {
 
     my $config_name = $controller_name;
     $config_name =~ s/^[^:]+:://;
-    $app->_setup_dynamic_controller( $controller_name, $app->config->{$config_name}, \%controller_methods );
-}
-
-sub _setup_dynamic_controller_meta {
-    my ($app, $meta) = @_;
-
-    Moose::Util::apply_all_roles(
-        $meta => 'CatalystX::ModelToControllerReflector::ControllerRole'
-    );
+    my $config = $app->config->{$config_name};
+    my @roles = @{ $config->{roles}||[] };
+    @roles = uniq @roles, 'CatalystX::ModelToControllerReflector::ControllerRole';
+    $config->{roles} = \@roles;
+    $app->_setup_dynamic_controller( $controller_name, $config, \%controller_methods );
 }
 
 sub generate_reflected_controller_action_method {

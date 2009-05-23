@@ -34,11 +34,14 @@ role {
         $type =~ s/::.*$//;
 
         my $meta = Moose->init_meta( for_class => $name );
+
         my @superclasses = @{ $config->{superclasses} || [] };
         push(@superclasses, 'Catalyst::' . $type) unless @superclasses;
         $meta->superclasses(@superclasses);
 
-        Moose::Util::apply_all_roles( $meta, @{ $config->{roles}||[] } ) if @{ $config->{roles}||[] };
+        if (my @roles = @{ $config->{roles}||[] }) {
+            Moose::Util::apply_all_roles( $name, @roles);
+        }
 
         if ($p->has_custom_component_method) {
             $meta->add_method(COMPONENT => $p->COMPONENT);
