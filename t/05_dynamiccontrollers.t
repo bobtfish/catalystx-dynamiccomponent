@@ -6,7 +6,7 @@ use lib "$Bin/lib";
 
 use Moose::Util qw/does_role/;
 
-use Test::More tests => 2;
+use Test::More tests => 4;
 
 use DynamicAppDemo;
 
@@ -14,6 +14,8 @@ use DynamicAppDemo;
 my $controller = DynamicAppDemo->controller('One');
 
 ok $controller;
+isa_ok $controller, 'DynamicAppDemo::ControllerBase';
+ok does_role($controller, 'DynamicAppDemo::ControllerRole');
 ok ! $controller->action_for('get_reflected_action_methods'),
     'not leaking actions';
 
