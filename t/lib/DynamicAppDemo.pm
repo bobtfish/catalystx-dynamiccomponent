@@ -10,7 +10,6 @@ extends 'Catalyst';
 
 # Ordering important. :)
 with qw/
-    CatalystX::DynamicComponent
     CatalystX::ModelsFromConfig
     CatalystX::ModelToControllerReflector
 /;
