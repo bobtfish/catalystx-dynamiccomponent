@@ -19,8 +19,8 @@ our $VERSION = '0.01';
 __PACKAGE__->config(
     name => 'DynamicAppDemo',
     'Controller::One' => {
-        base_class => 'DynamicAppDemo::ControllerBase',
-        roles      => 'DynamicAppDemo::ControlleRole',
+        superclasses => [qw/DynamicAppDemo::ControllerBase/],
+        roles      => [qw/DynamicAppDemo::ControllerRole/],
     },
     'Model::One' => {
         class => 'SomeModelClass',

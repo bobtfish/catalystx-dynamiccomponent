@@ -1,21 +1,22 @@
 package CatalystX::DynamicComponent;
 use MooseX::Role::Parameterized;
+use MooseX::Types::Moose qw/Str CodeRef ArrayRef/;
 use namespace::autoclean;
 
 our $VERSION = 0.000001;
 
 parameter 'name' => (
-    isa => 'Str',
+    isa => Str,
     required => 1,
 );
 
 parameter 'pre_immutable_hook' => (
-    isa => 'Str',
+    isa => Str,
     predicate => 'has_pre_immutable_hook',
 );
 
 parameter 'COMPONENT' => (
-    isa => 'CodeRef',
+    isa => CodeRef,
     predicate => 'has_custom_component_method',
 );
 
@@ -23,6 +24,7 @@ role {
     my $p = shift;
     my $name = $p->name;
     my $pre_immutable_hook = $p->pre_immutable_hook;
+
     method $name => sub {
         my ($app, $name, $config, $methods) = @_;
 
@@ -32,7 +34,11 @@ role {
         $type =~ s/::.*$//;
 
         my $meta = Moose->init_meta( for_class => $name );
-        $meta->superclasses('Catalyst::' . $type);
+        my @superclasses = @{ $config->{superclasses} || [] };
+        push(@superclasses, 'Catalyst::' . $type) unless @superclasses;
+        $meta->superclasses(@superclasses);
+
+        Moose::Util::apply_all_roles( $meta, @{ $config->{roles}||[] } ) if @{ $config->{roles}||[] };
 
         if ($p->has_custom_component_method) {
             $meta->add_method(COMPONENT => $p->COMPONENT);

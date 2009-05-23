@@ -41,7 +41,9 @@ sub _reflect_model_to_controller {
             $controller_methods{$method_name} = $app->generate_reflected_controller_action_method($suffix, $model_methods->{$method_name})
     }
 
-    $app->_setup_dynamic_controller( $controller_name, {}, \%controller_methods );
+    my $config_name = $controller_name;
+    $config_name =~ s/^[^:]+:://;
+    $app->_setup_dynamic_controller( $controller_name, $app->config->{$config_name}, \%controller_methods );
 }
 
 sub _setup_dynamic_controller_meta {
