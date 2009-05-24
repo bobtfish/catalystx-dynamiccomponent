@@ -62,3 +62,107 @@ role {
 
 1;
 
+__END__
+
+=head1 NAME
+
+CatalystX::DynamicComponent - Parameterised Moose role providing functionality to build Catalyst components at runtime.
+
+=head1 SYNOPSIS
+
+    package My::DynamicComponentType;
+    use Moose::Role;
+    use namespace::autoclean;
+
+    with 'CatalystX::DynamicComponent' => {
+        name => '_setup_one_of_my_components', # Name of injected method
+    };
+
+    after setup_components => sub { shift->_setup_all_my_components(@_); };
+
+    sub _setup_all_my_components {
+        my ($self, $c) = @_;
+        foreach my $component_name ('MyApp::Component1') {
+            my $component_config = $c->config->{$component_name};
+            # Calling this method creates a component, and registers it in your application
+            $self->_setup_one_of_my_components($component_name, $component_config);
+        }
+    }
+
+=head1 DESCRIPTION
+
+CatalystX::DynamicComponent aims to provide a flexible and reuseable method of building generic
+Catalyst components and registering them with your application.
+
+To give you this flexibility, it is implemented as a parametrised role which curries a
+component builder into your current package at application time.
+
+Authors of specific dynamic component builders are expected to be implemented as application class
+roles which compose this role, but provide their own advice around the C<< setup_compontens >>
+method, and call the curried method from this role once for each component you wish to setup.
+
+=head1 PARAMETERS
+
+=head2 name
+
+B<Required> - The name of the component generator method to curry.
+
+=head2 COMPONENT
+
+Optional, either a L<Class::MOP::Method>, or a plain code ref of a COMPONENT method to apply to
+the dynamically generated package before making it immutable.
+
+=head2 pre_immutable_hook
+
+Optional, method to call after a component has been generated, but before it is made immutable,
+constructed, and added to your component registry.
+
+=head1 CURRIED COMPONENT GENERATOR
+
+=head2 ARGUMENTS
+
+=over
+
+=item $component_name (E.g. C<< MyApp::Controller::Foo >>)
+
+=item $config (E.g. C<< $c->config->{$component_name} >>)
+
+=head2 OPERATION
+
+FIXME
+
+=head1 TODO
+
+=over
+
+=item *
+
+Better default handling of config - by default component should get config from where it normally
+does!
+
+=item *
+
+Abstract handling of role application / class name. This should not just be the component config
+by default.
+
+=item *
+
+Have some actual tests which test just this crap, and not all the other classes together.
+
+=back
+
+=head1 BUGS
+
+Probably plenty, test suite certainly isn't comprehensive.. Patches welcome.
+
+=head1 AUTHOR
+
+Tomas Doran (t0m) <bobtfish@bobtfish.net>
+
+=head1 LICENSE
+
+This code is copyright (c) 2009 Tomas Doran. This code is licensed on the same terms as perl
+itself.
+
+=cut
+
