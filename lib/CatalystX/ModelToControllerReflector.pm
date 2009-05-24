@@ -6,6 +6,7 @@ use namespace::autoclean;
 
 with 'CatalystX::DynamicComponent' => {
     name => '_setup_dynamic_controller',
+    roles => ['CatalystX::ModelToControllerReflector::ControllerRole'],
 };
 
 requires 'setup_components';
@@ -43,10 +44,10 @@ sub _reflect_model_to_controller {
 
     my $config_name = $controller_name;
     $config_name =~ s/^[^:]+:://;
-    my $config = $app->config->{$config_name};
-    my @roles = @{ $config->{roles}||[] };
-    @roles = uniq @roles, 'CatalystX::ModelToControllerReflector::ControllerRole';
-    $config->{roles} = \@roles;
+    
+    # Shallow copy so we don't stuff method refs in config
+    my $config = { %{$app->config->{$config_name}} };
+    
     $config->{methods} = \%controller_methods;
     $app->_setup_dynamic_controller( $controller_name, $config );
 }

@@ -13,13 +13,15 @@ requires qw/
 #                       forced to do it globally.
 with 'CatalystX::DynamicComponent' => {
     name => '_setup_dynamic_model',
-    COMPONENT => sub {
-         my ($component_class_name, $app, $args) = @_;
+    methods => {
+        COMPONENT => sub {
+            my ($component_class_name, $app, $args) = @_;
 
-        my $class = delete $args->{class};
-        Class::MOP::load_class($class);
+            my $class = delete $args->{class};
+            Class::MOP::load_class($class);
 
-        $class->new($args);
+            $class->new($args);
+        },
     },
 };
 
