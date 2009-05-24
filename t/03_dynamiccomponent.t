@@ -102,7 +102,7 @@ my $extra_config = {
     ok $model->can('_some_method_from_role'), 'Has had role applied';
     ok !My::Model->can('_some_method_from_role'), 'Role applied at right place';
     
-    ok $model->can('_some_other_method_from_role'),
+    ok $model->can('_some_method_from_other_role'),
         'Role application merges by default';
 
     ok $model->can('my_injected_method'), 'Injected method there as expected';

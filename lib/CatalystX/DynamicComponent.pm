@@ -1,7 +1,15 @@
 package CatalystX::DynamicComponent;
 use MooseX::Role::Parameterized;
-use MooseX::Types::Moose qw/Str CodeRef ArrayRef/;
+use MooseX::Types::Moose qw/Str CodeRef HashRef ArrayRef/;
+use Catalyst::Utils;
+use Moose::Util::TypeConstraints;
+use List::MoreUtils qw/uniq/;
 use namespace::autoclean;
+
+enum __PACKAGE__ . '::ResolveStrategy' => qw/
+    merge
+    replace
+/;
 
 our $VERSION = 0.000001;
 
@@ -15,10 +23,57 @@ parameter 'pre_immutable_hook' => (
     predicate => 'has_pre_immutable_hook',
 );
 
-parameter 'COMPONENT' => (
-    isa => CodeRef,
-    predicate => 'has_custom_component_method',
+my %parameters = (
+    methods => {
+        isa =>HashRef, 
+        default => sub { {} },
+        resolve_strategy => 'merge',
+    },
+    roles => {
+        isa => ArrayRef,
+        default => sub { [] },
+        resolve_strategy => 'merge',
+    },
+    superclasses => {
+        isa => ArrayRef,
+        default => sub { [] },
+        resolve_strategy => 'replace',
+    },
+); 
+
+# Shameless metaprogramming.
+foreach my $name (keys %parameters) {
+    my $resolve_strategy = delete $parameters{$name}->{resolve_strategy};
+
+    parameter $name, %{ $parameters{$name} };
+
+    parameter $name . '_resolve_strategy' => (
+        isa => __PACKAGE__ . '::ResolveStrategy',
+        default => $resolve_strategy,
+    );
+}
+
+# Code refs to implement the strategy types
+my %strategies = ( # Right hand precedence where appropriate
+    replace => sub { $_[1]; },
+    merge => sub {
+        if (ref($_[0]) eq 'ARRAY') {
+            [ uniq( @{ $_[0] }, @{ $_[1] } ) ];
+        }
+        else {
+            Catalyst::Utils::merge_hashes(shift, shift);
+        }
+    },
 );
+
+# Wrap all the crazy up in a method to generically merge configs.
+my $get_resolved_config = sub {
+    my ($name, $p, $config) = @_;
+    my $get_strategy_method_name = $name . '_resolve_strategy';
+    my $strategy = $strategies{$p->$get_strategy_method_name()};
+    $strategy->($p->$name, $config->{$name})
+        || $parameters{$name}->{default}->();
+};
 
 role {
     my $p = shift;
@@ -37,22 +92,19 @@ role {
 
         my $meta = Moose->init_meta( for_class => $name );
 
-        my @superclasses = @{ $config->{superclasses} || [] };
+        my @superclasses = @{ $get_resolved_config->('superclasses', $p, $config) };
         push(@superclasses, 'Catalyst::' . $type) unless @superclasses;
         $meta->superclasses(@superclasses);
 
-        if (my @roles = @{ $config->{roles}||[] }) {
+        if (my @roles = @{ $get_resolved_config->('roles', $p, $config) }) {
             Moose::Util::apply_all_roles( $name, @roles);
-        }
-
-        if ($p->has_custom_component_method) {
-            $meta->add_method(COMPONENT => $p->COMPONENT);
         }
 
         $app->$pre_immutable_hook($meta) if $p->has_pre_immutable_hook;
 
-        foreach my $name (keys %{ $config->{methods}||{} }) {
-            $meta->add_method($name => $config->{methods}->{$name});
+        my $methods = $get_resolved_config->('methods', $p, $config);
+        foreach my $name (keys %$methods) {
+            $meta->add_method($name => $methods->{$name});
         }
         $meta->make_immutable;
 
