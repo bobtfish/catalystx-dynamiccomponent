@@ -47,7 +47,8 @@ sub _reflect_model_to_controller {
     my @roles = @{ $config->{roles}||[] };
     @roles = uniq @roles, 'CatalystX::ModelToControllerReflector::ControllerRole';
     $config->{roles} = \@roles;
-    $app->_setup_dynamic_controller( $controller_name, $config, \%controller_methods );
+    $config->{methods} = \%controller_methods;
+    $app->_setup_dynamic_controller( $controller_name, $config );
 }
 
 sub generate_reflected_controller_action_method {

@@ -26,7 +26,9 @@ role {
     my $pre_immutable_hook = $p->pre_immutable_hook;
 
     method $name => sub {
-        my ($app, $name, $config, $methods) = @_;
+        my ($app, $name, $config) = @_;
+
+        $config ||= {};
 
         my $appclass = blessed($app) || $app;
         my $type = $name;
@@ -49,9 +51,8 @@ role {
 
         $app->$pre_immutable_hook($meta) if $p->has_pre_immutable_hook;
 
-        $methods ||= {};
-        foreach my $name (keys %$methods) {
-            $meta->add_method($name => $methods->{$name});
+        foreach my $name (keys %{ $config->{methods}||{} }) {
+            $meta->add_method($name => $config->{methods}->{$name});
         }
         $meta->make_immutable;
 

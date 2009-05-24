@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 15;
 use Test::Exception;
 
 use Moose ();
@@ -47,4 +47,35 @@ throws_ok { generate_testapp(); }
     is($name->can('COMPONENT'), $COMPONENT, 'Supplied COMPONENT method is on $app::Model::Foo');
 }
 
+{
+    package My::Model;
+    use Moose;
+    extends qw/Catalyst::Model/;
+    __PACKAGE__->meta->make_immutable;
+}
+{
+    package My::Role;
+    use Moose::Role;
+    sub _some_method_from_role {}
+}
+{
+    my $app_meta = generate_testapp({
+        name => 'dynamic_component_method',
+    });
+    my $app = $app_meta->name;
+    my $extra_config = {
+        superclasses => ['My::Model'],
+        roles => ['My::Role'],
+        methods => {
+            my_injected_method => sub { 'quuux' },
+        }
+    };
+    $app->dynamic_component_method( $app . "::Model::Foo", $extra_config );
+    my $model = $app->model('Foo');
+    isa_ok($model, 'My::Model');
+    ok $model->can('_some_method_from_role'), 'Has had role applied';
+    ok !My::Model->can('_some_method_from_role'), 'Role applied at right place';
+    ok $model->can('my_injected_method'), 'Injected method there as expected';
+    is $model->my_injected_method, 'quuux', 'Injected method returns correct val';
+}
 
