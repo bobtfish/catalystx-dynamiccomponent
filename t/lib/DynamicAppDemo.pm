@@ -3,16 +3,11 @@ use Moose;
 use Catalyst::Runtime '5.80002';
 
 use Catalyst qw/
-    -Debug
+    +CatalystX::ModelsFromConfig
+    +CatalystX::ModelToControllerReflector
 /;
 
 extends 'Catalyst';
-
-# Ordering important. :)
-with qw/
-    CatalystX::ModelsFromConfig
-    CatalystX::ModelToControllerReflector
-/;
 
 our $VERSION = '0.01';
 
