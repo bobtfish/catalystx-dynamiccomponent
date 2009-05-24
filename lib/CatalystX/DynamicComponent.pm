@@ -176,9 +176,15 @@ constructed, and added to your component registry.
 
 =over
 
-=item $component_name (E.g. C<< MyApp::Controller::Foo >>)
+=item *
 
-=item $config (E.g. C<< $c->config->{$component_name} >>)
+$component_name (E.g. C<< MyApp::Controller::Foo >>)
+
+=item *
+
+$config (E.g. C<< $c->config->{$component_name} >>)
+
+=back
 
 =head2 OPERATION
 
