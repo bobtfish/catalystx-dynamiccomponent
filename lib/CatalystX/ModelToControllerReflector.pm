@@ -55,7 +55,7 @@ sub _reflect_model_to_controller {
     $config_name =~ s/^[^:]+:://;
     
     # Shallow copy so we don't stuff method refs in config
-    my $config = { %{$app->config->{$config_name}} };
+    my $config = { %{$app->config->{$config_name}||{}} };
     
     $config->{methods} = \%controller_methods;
     $app->_setup_dynamic_controller( $controller_name, $config );

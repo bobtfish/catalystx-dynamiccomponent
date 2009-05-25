@@ -33,8 +33,16 @@ sub _setup_dynamic_models {
     my $model_prefix = 'Model::';
 
     my $config = $app->config || {};
+    my $myconfig = $config->{'CatalystX::DynamicComponent::ModelsFromConfig'} || {};
 
     foreach my $model_name ( grep { /^$model_prefix/ } keys %$config ) {
+        if (my $inc = $myconfig->{include}) {
+            next unless $model_name =~ /$inc/;
+        }
+        if (my $exc = $myconfig->{exclude}) {
+            next if $model_name =~ /$exc/;
+        }
+
         my $model_class_name = $app_name . '::' . $model_name;
 
         $app->_setup_dynamic_model( $model_class_name, $config->{$model_name} );
