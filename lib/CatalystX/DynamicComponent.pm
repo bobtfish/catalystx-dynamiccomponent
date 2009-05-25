@@ -143,24 +143,49 @@ CatalystX::DynamicComponent - Parameterised Moose role providing functionality t
 
     sub _setup_all_my_components {
         my ($self, $c) = @_;
-        foreach my $component_name ('MyApp::Component1') {
-            my $component_config = $c->config->{$component_name};
+        my $app = ref($self) || $self;
+        foreach my $component_name ('Controller::Foo') {
+            my %component_config = %{ $c->config->{$component_name} };
+            # Shallow copy so we avoid stuffing methods back in the config, as that's lame!
+            $component_config{methods} = {
+                some_method => sub { 'foo' },
+            };
+                
             # Calling this method creates a component, and registers it in your application
-            $self->_setup_one_of_my_components($component_name, $component_config);
+            # This component will subclass 'MyApp::ControllerBase', do 'MyApp::ControllerRole'
+            # and have a method called 'some_method' which will return the value 'foo'..
+            $self->_setup_one_of_my_components($app . '::' . $component_name, \%component_config);
         }
     }
 
+    package MyApp;
+    use Moose;
+    use namespace::autoclean;
+    use Catalyst qw/
+        +My::DynameComponentType
+    /;
+    __PACKAGE__->config(
+        name => 'MyApp',
+        'Controller::Foo' => {
+            superclasses => [qw/MyApp::ControllerBase/],
+            roles => [qw/MyApp::ControllerRole/],
+        },
+    );
+    __PACKAGE__->setup;
+
 =head1 DESCRIPTION
 
-CatalystX::DynamicComponent aims to provide a flexible and reuseable method of building generic
-Catalyst components and registering them with your application.
+CatalystX::DynamicComponent aims to provide a flexible and reuseable method of building L<Roles|Moose::Role>
+which can be added to L<Catalyst> applications, which generate components dynamically at application
+startup using the L<Moose> meta model.
 
-To give you this flexibility, it is implemented as a parametrised role which curries a
-component builder into your current package at application time.
+Thi is implemented as a parametrised role which curries a
+component builder method into your current package at application time.
 
-Authors of specific dynamic component builders are expected to be implemented as application class
-roles which compose this role, but provide their own advice around the C<< setup_compontens >>
-method, and call the curried method from this role once for each component you wish to setup.
+Authors of specific dynamic component builders are expected implement an application class
+roles which composes this role, and their own advice after the C<< setup_compontents >>
+method, which will call the component generation method provided by using this role once
+for each component you wish to create.
 
 =head1 PARAMETERS
 
@@ -168,15 +193,33 @@ method, and call the curried method from this role once for each component you w
 
 B<Required> - The name of the component generator method to curry.
 
-=head2 COMPONENT
+=head2 methods
 
-Optional, either a L<Class::MOP::Method>, or a plain code ref of a COMPONENT method to apply to
+Optional, a hash reference with keys being method names, and values being a L<Class::MOP::Method>,
+or a plain code ref of a method to apply to
 the dynamically generated package before making it immutable.
+
+=head2 roles
+
+Optional, an array reference of roles to apply to the generated component
+
+=head2 superclasses
+
+Optional, an array reference of superclasses to give the generated component.
+
+If this is not defined, and not passed in as an argument to the generation method,
+then Catalyst::(Model|View|Controller) will used as the base class (as appropriate given
+the requested namespace of the generated class, otherwise Catalyst::Component will be used.
+
+FIXME - Need tests for this.
 
 =head2 pre_immutable_hook
 
-Optional, method to call after a component has been generated, but before it is made immutable,
-constructed, and added to your component registry.
+Optional, either a coderef, which will be called with the component $meta and the merged $config,
+or a string name of a method to call on the application class, with the same parameters.
+
+This hook is called after a component has been generated and methods added, but before it is made
+immutable, constructed, and added to your component registry.
 
 =head1 CURRIED COMPONENT GENERATOR
 
@@ -194,6 +237,47 @@ $config (E.g. C<< $c->config->{$component_name} >>)
 
 =back
 
+=head3 config
+
+It is possible to set each of the roles, methods and superclasses parameters for each generated package
+individually by defining those keys in the C< $config > parameter to your curried component generation method.
+
+By default, roles and methods supplied from the curried role, and those passed as config will be merged.
+
+Superclasses, no the other hand, will replace those from the curried configuration if passed as options.
+This is to discourage accidental use of multiple inheritence, if you need this feature enabled, you should
+probably be using Roles instead!
+
+It is possible to change the default behavior of each parameter by passing a 
+C< $param_name.'_resolve_strategy' > parameter when currying a class generator, with values of either 
+C<merge> or C<replace>.
+
+Example:
+
+    package My::ComponentGenerator;
+    use Moose;
+
+    with 'CatalystX::DynamicComponent' => {
+        name => 'generate_magic_component',
+        roles => ['My::Role'],
+        roles_resolve_strategy => 'replace',
+    };
+
+    package MyApp;
+    use Moose;
+    use Catalyst qw/
+        My::ComponentGenerator
+    /;
+    extends 'Catalyst';
+    after 'setup_components' => sub {
+        my ($app) = @_;
+        # Component generated has no roles
+        $app->generate_magic_component('MyApp::Controller::Foo', { roles => [] });
+        # Component generated does My::Role
+        $app->generate_magic_component('MyApp::Controller::Foo', {} );
+    };
+    __PACKAGE__->setup;
+
 =head2 OPERATION
 
 FIXME
@@ -204,23 +288,23 @@ FIXME
 
 =item *
 
-Better default handling of config - by default component should get config from where it normally
-does!
-
-=item *
-
-Abstract handling of role application / class name. This should not just be the component config
-by default.
-
-=item *
-
 Test pre_immutable hook in tests
 
 =item *
 
 More tests fixme?
 
+=item *
+
+Unlame needing to pass fully qualified component name in, that's retarded...
+
+Remember to fix the docs and clients too ;)
+
 =back
+
+=head1 LINKS
+
+L<Catalyst>, L<MooseX::MethodAttributes>, L<CatalystX::ModelsFromConfig>.
 
 =head1 BUGS
 
