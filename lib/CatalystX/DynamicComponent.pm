@@ -19,7 +19,7 @@ parameter 'name' => (
 );
 
 parameter 'pre_immutable_hook' => (
-    isa => Str,
+    isa => CodeRef|Str,
     predicate => 'has_pre_immutable_hook',
 );
 
@@ -100,12 +100,20 @@ role {
             Moose::Util::apply_all_roles( $name, @roles);
         }
 
-        $app->$pre_immutable_hook($meta) if $p->has_pre_immutable_hook;
-
         my $methods = $get_resolved_config->('methods', $p, $config);
         foreach my $name (keys %$methods) {
             $meta->add_method($name => $methods->{$name});
         }
+ 
+        if ($p->has_pre_immutable_hook) {
+            if (!ref($pre_immutable_hook)) {
+                $app->$pre_immutable_hook($meta, $config);
+            }
+            else {
+                $pre_immutable_hook->($meta, $config);
+            }
+        }
+
         $meta->make_immutable;
 
         my $instance = $app->setup_component($name);
@@ -206,7 +214,11 @@ by default.
 
 =item *
 
-Have some actual tests which test just this crap, and not all the other classes together.
+Test pre_immutable hook in tests
+
+=item *
+
+More tests fixme?
 
 =back
 
