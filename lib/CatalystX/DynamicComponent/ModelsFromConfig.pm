@@ -51,3 +51,60 @@ sub _setup_dynamic_models {
 
 1;
 
+__END__
+
+=head1 NAME
+
+CatalystX::DynamicComponent::ModelsFromConfig - Generate simple L<Catalyst::Model::Adaptor> like models purely from application config.
+
+=head1 SYNOPSIS
+
+    package MyApp;
+    use Moose;
+    use namespace::autoclean;
+    use Catalyst qw/
+        +CatalystX::DynamicComponent::ModelsFromConfig
+    /;
+    __PACKAGE__->config(
+        name => __PACKAGE__,
+        'CatalystX::DynamicComponent::ModelsFromConfig' => {
+            include => '(One|Two|Three)^',
+            exclude => 'Tewnty',
+        },
+        'Model::One' => {
+            class => 'SomeClass', # Name of class to load and construct
+            other => 'config',    # Constructor passed other parameters
+        },
+        'Model::Two' => {
+            class => 'SomeOtherClass',
+            other => 'config',
+        },
+        ...
+        'Model::TwentyThree' => { # Ignored, as excluded
+        ...
+    );
+    __PACKAGE__->setup;
+
+=head1 DESCRIPTION
+
+FIXME
+
+=head1 LINKS
+
+L<Catalyst>, L<MooseX::MethodAttributes>, L<CatalystX::DynamicComponent>.
+
+=head1 BUGS
+
+Probably plenty, test suite certainly isn't comprehensive.. Patches welcome.
+
+=head1 AUTHOR
+
+Tomas Doran (t0m) <bobtfish@bobtfish.net>
+
+=head1 LICENSE
+
+This code is copyright (c) 2009 Tomas Doran. This code is licensed on the same terms as perl
+itself.
+
+=cut
+
