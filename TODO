@@ -36,13 +36,37 @@ Possible Implementation
 
 We can provide a number of controller base roles, for a number of
 different message styles: YAML with type-tags, JSON bare hashes,
-etc.
+etc. # FIXME - how does this work with role merging when you want to override the default?
+     #         maybe base class knows how to serialize generically, and loads a serialization engine...
+     #         or should we have serialization model.. Hmm, more thought needed.
 
-We can also provide a number of controller base roles, for a number of
-policies for what model methods get reflected / are dispatchable etc..
+We then provide strategy classes for a number of
+policies for what models, and which methods on those models
+get reflected / are dispatchable etc.. 
+
+FIXME - Models, or just the methods, I'm thinking the strategy
+just works out which methods.
 
 These should be selectable by configuration, the default
 controller class plus overrides for specific controllers.
+
+This makes the model to controller reflector config look like this:
+
+__PACKAGE__->config(
+ 'CatalystX::DynamicComponent::ModelToControllerReflector' => {
+     strategy => {
+        name => 'InterfaceRole',
+        roles => [qw/ My::Model::Interface::Role /],
+    },
+    include => '(Datacash|Cybersource|Paypal)^', # Reflect these models.
+    controller_superclasses => [qw/ Catalyst::Controller /], # Default, you can omit this line
+    controller_roles => [qw/ My::ControllerRole /],
+ },
+ 'Controller::Paypal' => {
+    superclasses => [qw/ My::Other::SuperClass /], # _replaces_ classes set above
+    roles => [qw/ My::Other::ControllerRole /], # merged with role set above
+ },
+);
 
 The calling convention to model methods should be the "payload". That
 might be a bare hashref for simple messages, or a blessed object of
