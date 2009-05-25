@@ -3,7 +3,7 @@ use Moose;
 use Catalyst::Runtime '5.80002';
 
 use Catalyst qw/
-    +CatalystX::ModelsFromConfig
+    +CatalystX::DynamicComponent::ModelsFromConfig
     +CatalystX::ModelToControllerReflector
 /;
 

@@ -3,7 +3,7 @@ use Moose;
 use namespace::autoclean;
 
 use Catalyst qw/
-    +CatalystX::ModelsFromConfig::InterfaceRoles
+    +CatalystX::DynamicComponent::ModelsFromConfig::InterfaceRoles
 /;
 
 extends 'Catalyst';

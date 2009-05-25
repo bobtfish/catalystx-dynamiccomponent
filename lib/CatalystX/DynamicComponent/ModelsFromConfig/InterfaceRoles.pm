@@ -1,5 +1,5 @@
 package # Hide from PAUSE
-    CatalystX::ModelsFromConfig::InterfaceRoles::COMPONENT;
+    CatalystX::DynamicComponent::ModelsFromConfig::InterfaceRoles::COMPONENT;
 use Moose::Role;
 use Moose::Util qw/does_role/;
 use namespace::autoclean;
@@ -22,17 +22,16 @@ around 'COMPONENT' => sub {
     return $component;
 };
 
-package CatalystX::ModelsFromConfig::InterfaceRoles;
+package CatalystX::DynamicComponent::ModelsFromConfig::InterfaceRoles;
 use Moose::Role;
-use Catalyst::Model::Adaptor ();
 use namespace::autoclean;
 
-with 'CatalystX::ModelsFromConfig';
+with 'CatalystX::DynamicComponent::ModelsFromConfig';
 
 around '_setup_dynamic_model' => sub {
     my ($orig, $app, $class_name, $config, @args) = @_;
     my @roles = @{ delete($config->{roles}) || [] };
-    push(@roles, 'CatalystX::ModelsFromConfig::InterfaceRoles::COMPONENT');
+    push(@roles, 'CatalystX::DynamicComponent::ModelsFromConfig::InterfaceRoles::COMPONENT');
     $config->{roles} = \@roles;
     $app->$orig($class_name, $config, @args);
 };
