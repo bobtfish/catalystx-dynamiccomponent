@@ -6,7 +6,7 @@ use lib "$Bin/lib";
 
 use Moose::Util qw/does_role/;
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 use DynamicAppDemo;
 
@@ -22,4 +22,7 @@ ok ! $controller->action_for('get_reflected_action_methods'),
 
 ok ! $controller->action_for('method_from_controller_role'),
     'not leaking actions';
+
+ok  $controller->action_for('say_hello'),
+    'Am finding generated actions';
 

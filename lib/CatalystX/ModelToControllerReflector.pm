@@ -8,7 +8,7 @@ my $mangle_attributes_on_generated_methods = sub {
     my ($meta, $config) = @_;
     foreach my $name (keys %{ $config->{methods}}) {
         my $m = $meta->get_method($name);
-        $m->meta->get_attribute('attributes')->set_value($m, ['Local']);
+        $meta->register_method_attributes($m->body, ['Local']);
     }
 };
 
