@@ -20,9 +20,6 @@ ok $controller->can('method_from_controller_role'), 'Role appears applied';
 ok ! $controller->action_for('get_reflected_action_methods'),
     'not leaking actions';
 
-TODO: {
-local $TODO = "Fix what gets registered";
 ok ! $controller->action_for('method_from_controller_role'),
     'not leaking actions';
-}
 

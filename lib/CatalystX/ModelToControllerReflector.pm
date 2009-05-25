@@ -4,9 +4,18 @@ use Moose::Util qw/does_role/;
 use List::MoreUtils qw/uniq/;
 use namespace::autoclean;
 
+my $mangle_attributes_on_generated_methods = sub {
+    my ($meta, $config) = @_;
+    foreach my $name (keys %{ $config->{methods}}) {
+        my $m = $meta->get_method($name);
+        $m->meta->get_attribute('attributes')->set_value($m, ['Local']);
+    }
+};
+
 with 'CatalystX::DynamicComponent' => {
     name => '_setup_dynamic_controller',
     roles => ['CatalystX::ModelToControllerReflector::ControllerRole'],
+    pre_immutable_hook => $mangle_attributes_on_generated_methods,
 };
 
 requires 'setup_components';
