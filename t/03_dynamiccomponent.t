@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 26;
+use Test::More tests => 32;
 use Test::Exception;
 
 use Moose ();
@@ -129,13 +129,57 @@ my $extra_config = {
     ok $model->can('_some_method_from_role'), 'Has had role applied';
     ok !My::Model->can('_some_method_from_role'), 'Role applied at right place';
     
-    ok !$model->can('_some_other_method_from_role'),
-        'Role application merges replaces when configured';
+    ok !$model->can('_some_method_from_other_role'),
+        'Role application replaces when configured';
 
     ok $model->can('my_injected_method'), 'Injected method there as expected';
     is $model->my_injected_method, 'quuux', 'Injected method returns correct val';
 
     ok !$model->can('my_other_injected_method'),
         'Injected methods replaced';
+}
+{
+    # Test that replace with blank config doesnt actually replace the config with blank
+    my $app_meta = generate_testapp({
+        %generator_config,
+        roles_resolve_strategy => 'replace',
+        superclasses_resolve_strategy => 'replace',
+        methods_resolve_strategy => 'replace',
+    });
+
+    my $app = $app_meta->name;
+    $app->dynamic_component_method( $app . "::Model::Foo", {} );
+    my $model = $app->model('Foo');
+
+    ok $model->can('my_other_injected_method'),
+        'Injected method present';
+
+    ok($model->isa('My::Other::Superclass'),
+        'superclasses not replaced as not set');
+
+    ok $model->can('_some_method_from_other_role'),
+        'Role application does not replace as not set';
+}
+{
+    # Test that replace with explicit blanks does so.
+    my $app_meta = generate_testapp({
+        %generator_config,
+        roles_resolve_strategy => 'replace',
+        superclasses_resolve_strategy => 'replace',
+        methods_resolve_strategy => 'replace',
+    });
+
+    my $app = $app_meta->name;
+    $app->dynamic_component_method( $app . "::Model::Foo", { superclasses => [], roles => [], methods => {} } );
+    my $model = $app->model('Foo');
+
+    ok !$model->can('my_other_injected_method'),
+        'Injected method not present';
+
+    ok(!$model->isa('My::Other::Superclass'),
+        'superclasses not replaced as set to []');
+
+    ok !$model->can('_some_method_from_other_role'),
+        'Role application replaces as set to []';
 }
 

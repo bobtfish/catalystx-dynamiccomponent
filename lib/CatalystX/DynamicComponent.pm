@@ -55,7 +55,7 @@ foreach my $name (keys %parameters) {
 
 # Code refs to implement the strategy types
 my %strategies = ( # Right hand precedence where appropriate
-    replace => sub { $_[1]; },
+    replace => sub { $_[1] ? $_[1] : $_[0]; },
     merge => sub {
         if (ref($_[0]) eq 'ARRAY') {
             [ uniq( @{ $_[0] }, @{ $_[1] } ) ];
@@ -95,7 +95,7 @@ role {
         my @superclasses = @{ $get_resolved_config->('superclasses', $p, $config) };
         push(@superclasses, 'Catalyst::' . $type) unless @superclasses;
         $meta->superclasses(@superclasses);
-
+        
         if (my @roles = @{ $get_resolved_config->('roles', $p, $config) }) {
             Moose::Util::apply_all_roles( $name, @roles);
         }
