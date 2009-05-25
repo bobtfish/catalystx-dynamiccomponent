@@ -96,13 +96,13 @@ role {
         push(@superclasses, 'Catalyst::' . $type) unless @superclasses;
         $meta->superclasses(@superclasses);
         
-        if (my @roles = @{ $get_resolved_config->('roles', $p, $config) }) {
-            Moose::Util::apply_all_roles( $name, @roles);
-        }
-
         my $methods = $get_resolved_config->('methods', $p, $config);
         foreach my $name (keys %$methods) {
             $meta->add_method($name => $methods->{$name});
+        }
+
+        if (my @roles = @{ $get_resolved_config->('roles', $p, $config) }) {
+            Moose::Util::apply_all_roles( $name, @roles);
         }
  
         if ($p->has_pre_immutable_hook) {
@@ -299,6 +299,10 @@ More tests fixme?
 Unlame needing to pass fully qualified component name in, that's retarded...
 
 Remember to fix the docs and clients too ;)
+
+=item *
+
+Tests for roles giving advice to methods which have just been added..
 
 =back
 
