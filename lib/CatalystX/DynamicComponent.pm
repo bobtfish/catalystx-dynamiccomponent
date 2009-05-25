@@ -86,16 +86,17 @@ role {
         $config ||= {};
 
         my $appclass = blessed($app) || $app;
+
         my $type = $name;
-        $type =~ s/^${appclass}:://; # FIXME - I think there is shit in C::Utils to do this.
         $type =~ s/::.*$//;
+        $name = $appclass . '::' . $name;
 
         my $meta = Moose->init_meta( for_class => $name );
 
         my @superclasses = @{ $get_resolved_config->('superclasses', $p, $config) };
         push(@superclasses, 'Catalyst::' . $type) unless @superclasses;
         $meta->superclasses(@superclasses);
-        
+
         my $methods = $get_resolved_config->('methods', $p, $config);
         foreach my $name (keys %$methods) {
             $meta->add_method($name => $methods->{$name});
@@ -104,7 +105,7 @@ role {
         if (my @roles = @{ $get_resolved_config->('roles', $p, $config) }) {
             Moose::Util::apply_all_roles( $name, @roles);
         }
- 
+
         if ($p->has_pre_immutable_hook) {
             if (!ref($pre_immutable_hook)) {
                 $app->$pre_immutable_hook($meta, $config);

@@ -36,7 +36,7 @@ sub _reflect_model_to_controller {
     my $class = blessed($app) || $app;
 
     my $controller_name = $model_name;
-    $controller_name =~ s/::Model::/::Controller::/;
+    $controller_name =~ s/^.*::Model::/Controller::/;
 
     my $suffix = $model_name;
     $suffix =~ s/^.*::Model:://;
@@ -51,12 +51,9 @@ sub _reflect_model_to_controller {
             $controller_methods{$method_name} = $app->generate_reflected_controller_action_method($suffix, $model_methods->{$method_name})
     }
 
-    my $config_name = $controller_name;
-    $config_name =~ s/^[^:]+:://;
-    
     # Shallow copy so we don't stuff method refs in config
-    my $config = { %{$app->config->{$config_name}||{}} };
-    
+    my $config = { %{$app->config->{$controller_name}||{}} };
+
     $config->{methods} = \%controller_methods;
     $app->_setup_dynamic_controller( $controller_name, $config );
 }
@@ -73,4 +70,33 @@ sub generate_reflected_controller_action_method {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+CatalystX::DynamicComponent::ModelToControllerReflector - Generate Catalyst controllers automaticall from models and configuration.
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 LINKS
+
+L<Catalyst>, L<MooseX::MethodAttributes>, L<CatalystX::ModelsFromConfig>.
+
+=head1 BUGS
+
+Probably plenty, test suite certainly isn't comprehensive.. Patches welcome.
+
+=head1 AUTHOR
+
+Tomas Doran (t0m) <bobtfish@bobtfish.net>
+
+=head1 LICENSE
+
+This code is copyright (c) 2009 Tomas Doran. This code is licensed on the same terms as perl
+itself.
+
+=cut
 

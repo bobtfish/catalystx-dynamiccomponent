@@ -24,7 +24,7 @@ throws_ok { generate_testapp(); }
     my $app_meta = generate_testapp({ name => 'dynamic_component_method' });
     my $app = $app_meta->name;
     ok $app->can('dynamic_component_method'), 'dynamic component method added';
-    $app->dynamic_component_method( $app . "::Model::Foo", {} );
+    $app->dynamic_component_method( "Model::Foo", {} );
     my $foo = $app->model('Foo');
     ok $foo, 'Have added Foo component';
     isa_ok($foo, 'Catalyst::Component');
@@ -40,7 +40,7 @@ throws_ok { generate_testapp(); }
     });
     my $app = $app_meta->name;
     ok $app->can('dynamic_component_method'), 'dynamic component method added';
-    $app->dynamic_component_method( $app . "::Model::Foo", {} );
+    $app->dynamic_component_method( "Model::Foo", {} );
     my $foo = $app->model('Foo');
     ok $foo, 'Have added Foo component';
     isa_ok($foo, 'TestClass', 'COMPONENT method returned totally different class');
@@ -93,7 +93,7 @@ my $extra_config = {
         %generator_config,
     });
     my $app = $app_meta->name;
-    $app->dynamic_component_method( $app . "::Model::Foo", $extra_config );
+    $app->dynamic_component_method( "Model::Foo", $extra_config );
     my $model = $app->model('Foo');
     isa_ok($model, 'My::Model', 'Correct superclass');
     ok(!$model->isa('My::Other::Superclass'),
@@ -101,7 +101,7 @@ my $extra_config = {
 
     ok $model->can('_some_method_from_role'), 'Has had role applied';
     ok !My::Model->can('_some_method_from_role'), 'Role applied at right place';
-    
+
     ok $model->can('_some_method_from_other_role'),
         'Role application merges by default';
 
@@ -120,7 +120,7 @@ my $extra_config = {
         methods_resolve_strategy => 'replace',
     });
     my $app = $app_meta->name;
-    $app->dynamic_component_method( $app . "::Model::Foo", $extra_config );
+    $app->dynamic_component_method( "Model::Foo", $extra_config );
     my $model = $app->model('Foo');
     isa_ok($model, 'My::Model', 'Correct superclass');
     isa_ok($model, 'My::Other::Superclass',
@@ -128,7 +128,7 @@ my $extra_config = {
 
     ok $model->can('_some_method_from_role'), 'Has had role applied';
     ok !My::Model->can('_some_method_from_role'), 'Role applied at right place';
-    
+
     ok !$model->can('_some_method_from_other_role'),
         'Role application replaces when configured';
 
@@ -148,7 +148,7 @@ my $extra_config = {
     });
 
     my $app = $app_meta->name;
-    $app->dynamic_component_method( $app . "::Model::Foo", {} );
+    $app->dynamic_component_method( "Model::Foo", {} );
     my $model = $app->model('Foo');
 
     ok $model->can('my_other_injected_method'),
@@ -170,7 +170,7 @@ my $extra_config = {
     });
 
     my $app = $app_meta->name;
-    $app->dynamic_component_method( $app . "::Model::Foo", { superclasses => [], roles => [], methods => {} } );
+    $app->dynamic_component_method( "Model::Foo", { superclasses => [], roles => [], methods => {} } );
     my $model = $app->model('Foo');
 
     ok !$model->can('my_other_injected_method'),

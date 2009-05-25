@@ -29,7 +29,6 @@ after 'setup_components' => sub { shift->_setup_dynamic_models(@_); };
 sub _setup_dynamic_models {
     my ($app) = @_;
 
-    my $app_name = blessed($app) || $app;
     my $model_prefix = 'Model::';
 
     my $config = $app->config || {};
@@ -43,9 +42,7 @@ sub _setup_dynamic_models {
             next if $model_name =~ /$exc/;
         }
 
-        my $model_class_name = $app_name . '::' . $model_name;
-
-        $app->_setup_dynamic_model( $model_class_name, $config->{$model_name} );
+        $app->_setup_dynamic_model( $model_name, $config->{$model_name} );
     }
 }
 
