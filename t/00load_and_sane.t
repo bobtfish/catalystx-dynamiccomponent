@@ -5,7 +5,7 @@ use warnings;
 #         more generic approach.
 
 use FindBin qw/$Bin/;
-use lib "$Bin/lib";
+use lib ("$Bin/lib", "$Bin/../lib");
 
 use List::MoreUtils qw/any all/;
 use Module::Find;
