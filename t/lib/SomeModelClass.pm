@@ -1,3 +1,9 @@
+package SomeModelClassInterface;
+use Moose::Role;
+use namespace::autoclean;
+
+requires 'say_hello';
+
 package SomeModelClass;
 use Moose;
 use CatalystX::ControllerGeneratingModel;
@@ -13,6 +19,8 @@ command say_hello => sub {
     my ($self, $name) = @_;
     return("Hello $name");
 };
+
+with 'SomeModelClassInterface';
 
 __PACKAGE__->meta->make_immutable;
 
