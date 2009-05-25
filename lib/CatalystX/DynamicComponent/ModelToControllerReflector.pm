@@ -14,7 +14,6 @@ my $mangle_attributes_on_generated_methods = sub {
 
 with 'CatalystX::DynamicComponent' => {
     name => '_setup_dynamic_controller',
-    roles => ['CatalystX::DynamicComponent::ModelToControllerReflector::ControllerRole'],
     pre_immutable_hook => $mangle_attributes_on_generated_methods,
 };
 
