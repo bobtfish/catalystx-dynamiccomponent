@@ -4,7 +4,7 @@ use Catalyst::Runtime '5.80002';
 
 use Catalyst qw/
     +CatalystX::DynamicComponent::ModelsFromConfig
-    +CatalystX::ModelToControllerReflector
+    +CatalystX::DynamicComponent::ModelToControllerReflector
 /;
 
 extends 'Catalyst';

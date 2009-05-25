@@ -1,4 +1,4 @@
-package CatalystX::ModelToControllerReflector;
+package CatalystX::DynamicComponent::ModelToControllerReflector;
 use Moose::Role;
 use Moose::Util qw/does_role/;
 use List::MoreUtils qw/uniq/;
@@ -14,7 +14,7 @@ my $mangle_attributes_on_generated_methods = sub {
 
 with 'CatalystX::DynamicComponent' => {
     name => '_setup_dynamic_controller',
-    roles => ['CatalystX::ModelToControllerReflector::ControllerRole'],
+    roles => ['CatalystX::DynamicComponent::ModelToControllerReflector::ControllerRole'],
     pre_immutable_hook => $mangle_attributes_on_generated_methods,
 };
 
@@ -43,6 +43,7 @@ sub _reflect_model_to_controller {
     $suffix =~ s/^.*::Model:://;
 
     my %controller_methods;
+    # FIXME - Abstract this strategy crap out.
     my $model_methods = $model->meta->get_method_map;
     foreach my $method_name (keys %$model_methods) {
             next unless does_role($model_methods->{$method_name}, 'CatalystX::ControllerGeneratingModel::DispatchableMethod');
