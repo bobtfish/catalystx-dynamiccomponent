@@ -74,3 +74,32 @@ sub generate_reflected_controller_action_method {
 
 1;
 
+__END__
+
+=head1 NAME
+
+CatalystX::DynamicComponent::ModelToControllerReflector - Generate Catalyst controllers automaticall from models and configuration.
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 LINKS
+
+L<Catalyst>, L<MooseX::MethodAttributes>, L<CatalystX::ModelsFromConfig>.
+
+=head1 BUGS
+
+Probably plenty, test suite certainly isn't comprehensive.. Patches welcome.
+
+=head1 AUTHOR
+
+Tomas Doran (t0m) <bobtfish@bobtfish.net>
+
+=head1 LICENSE
+
+This code is copyright (c) 2009 Tomas Doran. This code is licensed on the same terms as perl
+itself.
+
+=cut
+

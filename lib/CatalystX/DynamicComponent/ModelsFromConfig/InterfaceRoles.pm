@@ -38,3 +38,55 @@ around '_setup_dynamic_model' => sub {
 
 1;
 
+__END__
+
+=head1 NAME
+
+CatalystX::DynamicComponent::ModelsFromConfig::InterfaceRoles - Generate simple L<Catalyst::Model::Adaptor> like models from application config, enforcing roles on the model classes.
+
+=head1 SYNOPSIS
+
+    package MyApp;
+    use Moose;
+    use namespace::autoclean;
+    use Catalyst qw/
+        +CatalystX::DynamicComponent::ModelsFromConfig::InterfaceRoles
+    /;
+    __PACKAGE__->config(
+        name => __PACKAGE__,
+        'CatalystX::DynamicComponent::ModelsFromConfig' => {
+            include => 'One^',
+        },
+        'Model::One' => {
+            class => 'SomeClass', # Name of class to load and construct
+            other => 'config',    # Constructor passed other parameters
+            interface_roles => [qw/ My::Role /], # Your app explodes if SomeClass doesn't do My::Role
+        },
+        ...
+    );
+    __PACKAGE__->setup;
+
+
+=head1 DESCRIPTION
+
+FIXME
+
+=head1 LINKS
+
+L<CatalystX::DynamicComponent::ModelsFromConfig>, L<CatalystX::DynamicComponent>, L<Catalyst>.
+
+=head1 BUGS
+
+Probably plenty, test suite certainly isn't comprehensive.. Patches welcome.
+
+=head1 AUTHOR
+
+Tomas Doran (t0m) <bobtfish@bobtfish.net>
+
+=head1 LICENSE
+
+This code is copyright (c) 2009 Tomas Doran. This code is licensed on the same terms as perl
+itself.
+
+=cut
+
