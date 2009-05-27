@@ -82,28 +82,27 @@ role {
 
     method $name => sub {
         my ($app, $name, $config) = @_;
+        my $appclass = blessed($app) || $app;
 
         $config ||= {};
 
-        my $appclass = blessed($app) || $app;
-
         my $type = $name;
         $type =~ s/::.*$//;
-        $name = $appclass . '::' . $name;
 
-        my $meta = Moose->init_meta( for_class => $name );
+        my $component_name = $appclass . '::' . $name;
+        my $meta = Moose->init_meta( for_class => $component_name );
 
         my @superclasses = @{ $get_resolved_config->('superclasses', $p, $config) };
         push(@superclasses, 'Catalyst::' . $type) unless @superclasses;
         $meta->superclasses(@superclasses);
 
         my $methods = $get_resolved_config->('methods', $p, $config);
-        foreach my $name (keys %$methods) {
-            $meta->add_method($name => $methods->{$name});
+        foreach my $method_name (keys %$methods) {
+            $meta->add_method($method_name => $methods->{$method_name});
         }
 
         if (my @roles = @{ $get_resolved_config->('roles', $p, $config) }) {
-            Moose::Util::apply_all_roles( $name, @roles);
+            Moose::Util::apply_all_roles( $component_name, @roles);
         }
 
         if ($p->has_pre_immutable_hook) {
@@ -115,10 +114,13 @@ role {
             }
         }
 
+	# stash the config of this generated class away
+	$meta->add_method('config', sub { return $app->config->{$name} }); 
+
         $meta->make_immutable;
 
-        my $instance = $app->setup_component($name);
-        $app->components->{ $name } = $instance;
+        my $instance = $app->setup_component($component_name);
+        $app->components->{ $component_name } = $instance;
     };
 };
 
