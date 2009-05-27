@@ -4,6 +4,7 @@ use namespace::autoclean;
 
 use Catalyst qw/
     +CatalystX::DynamicComponent::ModelsFromConfig::InterfaceRoles
+    +CatalystX::DynamicComponent::ModelToControllerReflector
 /;
 
 extends 'Catalyst';
