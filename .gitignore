@@ -8,3 +8,4 @@ blib
 inc
 t/.*.swp
 lib/.*.swp
+*~
