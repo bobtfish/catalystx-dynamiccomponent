@@ -114,9 +114,6 @@ role {
             }
         }
 
-        # stash the config of this generated class away
-        $meta->add_method('dynamic_model_config', sub { return $app->config->{$name} }); 
-
         $meta->make_immutable;
 
         my $instance = $app->setup_component($component_name);
