@@ -33,18 +33,21 @@ sub _setup_dynamic_controllers {
 sub _reflect_model_to_controller {
     my ( $app, $model_name, $model ) = @_;
 
-    my $class = blessed($app) || $app;
+    # Model passed in as MyApp::Model::Foo, strip MyApp
+    $model_name =~ s/^[^:]+:://;
 
+    # Get Controller::Foo
     my $controller_name = $model_name;
-    $controller_name =~ s/^.*::Model::/Controller::/;
+    $controller_name =~ s/^Model::/Controller::/;
 
+    # Get Foo
     my $suffix = $model_name;
-    $suffix =~ s/^.*::Model:://;
+    $suffix =~ s/Model:://;
 
     my %controller_methods;
     # FIXME - Abstract this strategy crap out.
     my $model_methods = $model->meta->get_method_map;
-    my $interface_roles = $model_name->dynamic_model_config->{interface_roles};
+    my $interface_roles = $app->config->{$model_name}->{interface_roles};
 
     for my $interface_role (@$interface_roles) {
             for my $required_method ($interface_role->meta->get_required_method_list) {
