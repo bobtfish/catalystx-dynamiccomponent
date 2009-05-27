@@ -7,7 +7,7 @@ use namespace::autoclean;
 around 'COMPONENT' => sub {
     my ($orig, $component_class_name, $app, $args) = @_;
 
-    my $interface_roles = delete $args->{interface_roles};
+    my $interface_roles = $args->{interface_roles};
     confess("No interface_roles configuration specified for $component_class_name")
         unless $interface_roles && ref($interface_roles) eq 'ARRAY'
             && scalar(@$interface_roles);
@@ -32,7 +32,7 @@ around '_setup_dynamic_model' => sub {
     my ($orig, $app, $class_name, $config, @args) = @_;
     my @roles = @{ delete($config->{roles}) || [] };
     push(@roles, 'CatalystX::DynamicComponent::ModelsFromConfig::InterfaceRoles::COMPONENT');
-    $config->{roles} = \@roles;
+    local $config->{roles} = \@roles;
     $app->$orig($class_name, $config, @args);
 };
 

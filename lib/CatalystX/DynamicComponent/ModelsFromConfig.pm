@@ -16,7 +16,7 @@ with 'CatalystX::DynamicComponent' => {
         COMPONENT => sub {
             my ($component_class_name, $app, $args) = @_;
 
-            my $class = delete $args->{class};
+            my $class = $args->{class};
             Class::MOP::load_class($class);
 	    
             $class->new($args);
