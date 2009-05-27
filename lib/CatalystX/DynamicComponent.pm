@@ -114,8 +114,8 @@ role {
             }
         }
 
-	# stash the config of this generated class away
-	$meta->add_method('config', sub { return $app->config->{$name} }); 
+        # stash the config of this generated class away
+        $meta->add_method('dynamic_model_config', sub { return $app->config->{$name} }); 
 
         $meta->make_immutable;
 
