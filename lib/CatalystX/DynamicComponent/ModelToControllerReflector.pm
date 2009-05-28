@@ -71,8 +71,10 @@ sub generate_reflected_controller_action_method {
     sub {
         my ($self, $c, @args) = @_;
         $c->res->header('X-From-Model', $model);
-        $c->res->header('X-From-Model-Data', $c->model($model)->$method_name(@args));
+        my $response = $c->model($model)->$method_name($c->req->data);
+        $c->res->header('X-From-Model-Data', $response);
         $c->res->body('OK');
+        $c->stash->{response} = $response;
     };
 }
 

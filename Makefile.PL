@@ -12,6 +12,9 @@ requires 'MooseX::Role::Parameterized' => '0.06';
 requires 'Catalyst::Runtime' => '5.80004';
 requires 'List::MoreUtils';
 
+requires 'MooseX::Types::Structured';
+requires 'MooseX::Lexical::Types';
+
 resources repository => 'git@github.com:bobtfish/catalyst-dynamicappdemo.git';
 
 auto_install;
