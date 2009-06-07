@@ -4,7 +4,6 @@ use MooseX::Types::Moose qw/Str CodeRef HashRef ArrayRef/;
 use Catalyst::Utils;
 use Moose::Util::TypeConstraints;
 use List::MoreUtils qw/uniq/;
-use Moose::Autobox;
 use namespace::autoclean;
 
 enum __PACKAGE__ . '::ResolveStrategy' => qw/
