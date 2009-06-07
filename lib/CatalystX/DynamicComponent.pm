@@ -4,6 +4,7 @@ use MooseX::Types::Moose qw/Str CodeRef HashRef ArrayRef/;
 use Catalyst::Utils;
 use Moose::Util::TypeConstraints;
 use List::MoreUtils qw/uniq/;
+use Moose::Autobox;
 use namespace::autoclean;
 
 enum __PACKAGE__ . '::ResolveStrategy' => qw/
@@ -23,6 +24,9 @@ parameter 'pre_immutable_hook' => (
     predicate => 'has_pre_immutable_hook',
 );
 
+my $coerceablearray = subtype ArrayRef;
+coerce $coerceablearray, from Str, via { [ $_ ] };
+
 my %parameters = (
     methods => {
         isa =>HashRef, 
@@ -30,12 +34,12 @@ my %parameters = (
         resolve_strategy => 'merge',
     },
     roles => {
-        isa => ArrayRef,
+        isa => $coerceablearray, coerce => 1,
         default => sub { [] },
         resolve_strategy => 'merge',
     },
     superclasses => {
-        isa => ArrayRef,
+        isa => $coerceablearray, coerce => 1,
         default => sub { [] },
         resolve_strategy => 'replace',
     },
@@ -55,9 +59,15 @@ foreach my $name (keys %parameters) {
 
 # Code refs to implement the strategy types
 my %strategies = ( # Right hand precedence where appropriate
-    replace => sub { $_[1] ? $_[1] : $_[0]; },
+    replace => sub { 
+        $_[0] = [ $_[0] ] if $_[0] && !ref $_[0];
+        $_[1] = [ $_[1] ] if $_[1] && !ref $_[1];
+        $_[1] ? $_[1] : $_[0];
+    },
     merge => sub {
-        if (ref($_[0]) eq 'ARRAY') {
+        $_[0] = [ $_[0] ] if $_[0] && !ref $_[0];
+        $_[1] = [ $_[1] ] if $_[1] && !ref $_[1];
+        if (ref($_[0]) eq 'ARRAY' || ref($_[1]) eq 'ARRAY') {
             [ uniq( @{ $_[0] }, @{ $_[1] } ) ];
         }
         else {

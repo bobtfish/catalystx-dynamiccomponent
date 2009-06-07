@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 32;
+use Test::More tests => 38;
 use Test::Exception;
 
 use Moose ();
@@ -181,5 +181,46 @@ my $extra_config = {
 
     ok !$model->can('_some_method_from_other_role'),
         'Role application replaces as set to []';
+}
+{
+    # Test that base strings get listified.
+    my $app_meta = generate_testapp({
+        %generator_config,
+    });
+
+    my $app = $app_meta->name;
+    $app->dynamic_component_method( "Model::Foo", { superclasses => 'My::Model', roles => 'My::Role', } );
+    my $model = $app->model('Foo');
+
+    ok $model->can('my_other_injected_method'),
+        'Injected method present';
+
+    ok(!$model->isa('My::Other::Superclass'),
+        'superclasses replaced');
+
+    ok $model->can('_some_method_from_other_role'),
+        'Role application merges';
+}
+
+{
+    # Test that base strings get listified.
+    my $app_meta = generate_testapp({
+        %generator_config,
+        roles => 'My::Other::Role',
+        superclasses => 'My::Other::Superclass',
+    });
+
+    my $app = $app_meta->name;
+    $app->dynamic_component_method( "Model::Foo", { } );
+    my $model = $app->model('Foo');
+
+    ok $model->can('my_other_injected_method'),
+        'Injected method present';
+
+    ok($model->isa('My::Other::Superclass'),
+        'superclasses from string');
+
+    ok $model->can('_some_method_from_other_role'),
+        'Role application merges';
 }
 
