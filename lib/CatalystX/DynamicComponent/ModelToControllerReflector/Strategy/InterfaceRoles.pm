@@ -8,8 +8,7 @@ use namespace::autoclean;
 with 'CatalystX::DynamicComponent::ModelToControllerReflector::Strategy';
 
 sub get_reflected_method_list {;
-    my ($self, $app, $model_meta) = @_;
-    my $model_name = $model_meta->name;
+    my ($self, $app, $model_name) = @_;
     my $model_config = exists $app->config->{$model_name} ? $app->config->{$model_name} : {};
     my $my_config = exists $app->config->{'CatalystX::DynamicComponent::ModelToControllerReflector'}
         ? $app->config->{'CatalystX::DynamicComponent::ModelToControllerReflector'} : {};
