@@ -12,7 +12,7 @@ my $model = DynamicAppDemo->model('One');
 
 ok $model;
 isa_ok $model, 'SomeModelClass';
-is $model->say_hello('world'), 'Hello world';
+is_deeply $model->say_hello({name => 'world'}), { type => 'say_hello_response', body => 'Hello world' };
 
 ok(DynamicAppDemo->model('Two'), 'Have model Two');
 

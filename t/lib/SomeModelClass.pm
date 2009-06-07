@@ -21,6 +21,7 @@ use namespace::autoclean;
 command say_hello => sub {
     my ($self, $document) = @_;
 
+    confess("Not a hash") unless (ref($document) eq 'HASH');
     my $name = $document->{name};
     return({ type => 'say_hello_response',
 

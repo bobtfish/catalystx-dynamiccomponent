@@ -2,6 +2,7 @@ package CatalystX::DynamicComponent::ModelToControllerReflector;
 use Moose::Role;
 use Moose::Util qw/does_role/;
 use List::MoreUtils qw/uniq/;
+use Moose::Autobox;
 use namespace::autoclean;
 
 my $mangle_attributes_on_generated_methods = sub {
@@ -47,8 +48,9 @@ sub _reflect_model_to_controller {
     my %controller_methods;
     # FIXME - Abstract this strategy crap out.
     my $model_methods = $model->meta->get_method_map;
-    my $interface_roles = $app->config->{$model_name}->{interface_roles};
-
+    my $interface_roles = [ uniq(($app->config->{$model_name}->{interface_roles}||=[])->flatten,
+        ($app->config->{'CatalystX::DynamicComponent::ModelToControllerReflector'}->{interface_roles}||=[])->flatten) ];
+    
     for my $interface_role (@$interface_roles) {
             for my $required_method ($interface_role->meta->get_required_method_list) {
                     # Note need to pass model name, as the method actually comes from

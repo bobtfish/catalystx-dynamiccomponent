@@ -17,6 +17,9 @@ __PACKAGE__->config(
         superclasses => [qw/DynamicAppDemo::ControllerBase/],
         roles      => [qw/DynamicAppDemo::ControllerRole/],
     },
+    'CatalystX::DynamicComponent::ModelToControllerReflector' => {
+        interface_roles => 'SomeModelClassInterface',
+    },
     'CatalystX::DynamicComponent::ModelsFromConfig' => {
         include => 'One|Two|Four',
         exclude => 'Four',
