@@ -10,7 +10,10 @@ with 'CatalystX::DynamicComponent::ModelToControllerReflector::Strategy';
 sub get_reflected_method_list {;
     my ($self, $app, $model_meta) = @_;
     my $model_name = $model_meta->name;
-    my $interface_roles = [ uniq( map { exists $_->{interface_roles} ? $_->{interface_roles}->flatten : () } $app->config->{$model_name}, $app->config->{'CatalystX::DynamicComponent::ModelToControllerReflector'} ) ];
+    my $model_config = exists $app->config->{$model_name} ? $app->config->{$model_name} : {};
+    my $my_config = exists $app->config->{'CatalystX::DynamicComponent::ModelToControllerReflector'}
+        ? $app->config->{'CatalystX::DynamicComponent::ModelToControllerReflector'} : {};
+    my $interface_roles = [ uniq( map { (defined $_ && exists $_->{interface_roles}) ? $_->{interface_roles}->flatten : () } $model_config, $my_config ) ];
 
     map { $_->meta->get_required_method_list } @$interface_roles;
 }

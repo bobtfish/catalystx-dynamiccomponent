@@ -51,7 +51,9 @@ sub _reflect_model_to_controller {
     my %controller_methods;
     # FIXME - Abstract this strategy crap out.
 
-    my $strategy = $app->config->{'CatalystX::DynamicComponent::ModelToControllerReflector'}{'reflection_strategy'} || 'InterfaceRoles';
+    my $config = exists $app->config->{'CatalystX::DynamicComponent::ModelToControllerReflector'}
+        ? $app->config->{'CatalystX::DynamicComponent::ModelToControllerReflector'} : {};
+    my $strategy = exists $config->{reflection_strategy} ? $config->{reflection_strategy} : 'InterfaceRoles';
     $strategy = "CatalystX::DynamicComponent::ModelToControllerReflector::Strategy::$strategy";
     Class::MOP::load_class($strategy);
     $strategy->new;
@@ -65,10 +67,10 @@ sub _reflect_model_to_controller {
     }
 
     # Shallow copy so we don't stuff method refs in config
-    my $config = { %{$app->config->{$controller_name}||{}} };
+    my $controller_config = { %{$app->config->{$controller_name}||{}} };
 
-    $config->{methods} = \%controller_methods;
-    $app->_setup_dynamic_controller( $controller_name, $config );
+    $controller_config->{methods} = \%controller_methods;
+    $app->_setup_dynamic_controller( $controller_name, $controller_config );
 }
 
 sub generate_reflected_controller_action_method {
