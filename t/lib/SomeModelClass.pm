@@ -7,8 +7,6 @@ requires 'say_hello';
 package SomeModelClass;
 use Moose;
 use CatalystX::ControllerGeneratingModel;
-use DemoTypeLibrary qw/MessageDocument/;
-use MooseX::Lexical::Types qw/MessageDocument/;
 use namespace::autoclean;
 
 # Note trivial calling convention.
@@ -30,11 +28,6 @@ command say_hello => sub {
 };
 
 with 'SomeModelClassInterface';
-
-before 'say_hello' => sub {
-    my $self = shift;
-    my MessageDocument $message = shift;
-};
 
 __PACKAGE__->meta->make_immutable;
 
