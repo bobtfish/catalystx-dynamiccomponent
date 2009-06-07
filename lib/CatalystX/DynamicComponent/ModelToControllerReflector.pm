@@ -48,8 +48,7 @@ sub _reflect_model_to_controller {
     my %controller_methods;
     # FIXME - Abstract this strategy crap out.
     my $model_methods = $model->meta->get_method_map;
-    my $interface_roles = [ uniq(($app->config->{$model_name}->{interface_roles}||=[])->flatten,
-        ($app->config->{'CatalystX::DynamicComponent::ModelToControllerReflector'}->{interface_roles}||=[])->flatten) ];
+    my $interface_roles = [ uniq( map { exists $_->{interface_roles} ? $_->{interface_roles}->flatten : () } $app->config->{$model_name}, $app->config->{'CatalystX::DynamicComponent::ModelToControllerReflector'} ) ];
     
     for my $interface_role (@$interface_roles) {
             for my $required_method ($interface_role->meta->get_required_method_list) {

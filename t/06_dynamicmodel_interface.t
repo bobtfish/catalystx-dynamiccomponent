@@ -8,7 +8,10 @@ use Test::More tests => 2;
 
 BEGIN { use_ok('ModelsFromConfigInterfaceApp'); }
 
-is_deeply(ModelsFromConfigInterfaceApp->config, {
+my $config = ModelsFromConfigInterfaceApp->config;
+delete $config->{'CatalystX::DynamicComponent::ModelToControllerReflector'};
+
+is_deeply($config, {
     name => 'ModelsFromConfigInterfaceApp',
     'Model::One' => {
         class => 'SomeModelClass',
