@@ -318,11 +318,16 @@ Tests for roles giving advice to methods which have just been added..
 
 =head1 LINKS
 
-L<Catalyst>, L<MooseX::MethodAttributes>, L<CatalystX::ModelsFromConfig>.
+L<Catalyst>, L<MooseX::MethodAttributes>,
+L<CatalystX::DynamicComponent::ModelsFromConfig>.
 
 =head1 BUGS
 
 Probably plenty, test suite certainly isn't comprehensive.. Patches welcome.
+
+Source code can be found on github:
+
+    http://github.com/bobtfish/catalyst-dynamicappdemo/tree/master
 
 =head1 AUTHOR
 
