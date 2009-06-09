@@ -107,6 +107,7 @@ role {
 
         my $methods = $get_resolved_config->('methods', $p, $config);
         foreach my $method_name (keys %$methods) {
+            next unless $methods->{$method_name}; # Skip explicitly undef methods
             $meta->add_method($method_name => $methods->{$method_name});
         }
 

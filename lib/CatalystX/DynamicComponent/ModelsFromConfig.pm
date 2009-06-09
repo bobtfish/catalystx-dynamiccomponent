@@ -1,5 +1,6 @@
 package CatalystX::DynamicComponent::ModelsFromConfig;
 use Moose::Role;
+use Catalyst::Utils;
 use namespace::autoclean;
 
 requires qw/
@@ -41,9 +42,16 @@ sub _setup_dynamic_models {
         if (my $exc = $myconfig->{exclude}) {
             next if $model_name =~ /$exc/;
         }
-
-        $app->_setup_dynamic_model( $model_name, $config->{$model_name} );
+        $app->_setup_dynamic_model( $model_name, 
+            $app->_setup_dynamic_model_config( $model_name, 
+                Catalyst::Utils::merge_hashes($myconfig, $config->{$model_name}) )
+        );
     }
+}
+
+sub _setup_dynamic_model_config {
+    my ($app, $model_name, $config) = @_;
+    return $config;
 }
 
 1;
