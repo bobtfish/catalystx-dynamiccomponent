@@ -11,7 +11,7 @@ enum __PACKAGE__ . '::ResolveStrategy' => qw/
     replace
 /;
 
-our $VERSION = 0.000000_01;
+our $VERSION = "0.000000_01";
 
 parameter 'name' => (
     isa => Str,
