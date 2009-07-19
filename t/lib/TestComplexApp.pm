@@ -12,16 +12,11 @@ extends 'Catalyst';
 
 our $VERSION = '0.01';
 
-__PACKAGE__->config( 
+__PACKAGE__->config(
     name => 'TestComplexApp',
     'CatalystX::DynamicComponent::ModelsFromConfig' => {
         include => 'PaymentProvider::',
         roles => 'TestComplexApp::ProfileModelLoader',
-        methods => {
-            COMPONENT => undef, # Remove custom COMPONENT method as
-                                # we're doing our own thing with
-                                # InstancePerContext
-        },
     },
     'Model::PaymentProvider::Datacash' => {
         class => 'PaymentProvider::Datacash',
@@ -37,7 +32,7 @@ __PACKAGE__->config(
 # Ensure to load the model class early and so fail early..
 sub _setup_dynamic_model_config {
     my ($app, $model_name, $config) = @_;
-    
+
     die("Config for $model_name does not have a ->{class} key, fatal!\n")
         unless $config->{class};
 
