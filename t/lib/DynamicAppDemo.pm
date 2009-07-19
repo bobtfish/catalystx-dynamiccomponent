@@ -23,6 +23,7 @@ __PACKAGE__->config(
     'CatalystX::DynamicComponent::ModelsFromConfig' => {
         include => 'One|Two|Four',
         exclude => 'Four',
+        superclasses => ['Catalyst::Model::Adaptor'],
     },
     'Model::One' => {
         class => 'SomeModelClass',
