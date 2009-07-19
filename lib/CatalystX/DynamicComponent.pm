@@ -28,7 +28,7 @@ coerce $coerceablearray, from Str, via { [ $_ ] };
 
 my %parameters = (
     methods => {
-        isa =>HashRef, 
+        isa => HashRef,
         default => sub { {} },
         resolve_strategy => 'merge',
     },
@@ -42,7 +42,7 @@ my %parameters = (
         default => sub { [] },
         resolve_strategy => 'replace',
     },
-); 
+);
 
 # Shameless metaprogramming.
 foreach my $name (keys %parameters) {
@@ -58,7 +58,7 @@ foreach my $name (keys %parameters) {
 
 # Code refs to implement the strategy types
 my %strategies = ( # Right hand precedence where appropriate
-    replace => sub { 
+    replace => sub {
         $_[0] = [ $_[0] ] if $_[0] && !ref $_[0];
         $_[1] = [ $_[1] ] if $_[1] && !ref $_[1];
         $_[1] ? $_[1] : $_[0];
@@ -160,7 +160,7 @@ CatalystX::DynamicComponent - Parameterised Moose role providing functionality t
             $component_config{methods} = {
                 some_method => sub { 'foo' },
             };
-                
+
             # Calling this method creates a component, and registers it in your application
             # This component will subclass 'MyApp::ControllerBase', do 'MyApp::ControllerRole'
             # and have a method called 'some_method' which will return the value 'foo'..
@@ -258,8 +258,8 @@ Superclasses, no the other hand, will replace those from the curried configurati
 This is to discourage accidental use of multiple inheritence, if you need this feature enabled, you should
 probably be using Roles instead!
 
-It is possible to change the default behavior of each parameter by passing a 
-C< $param_name.'_resolve_strategy' > parameter when currying a class generator, with values of either 
+It is possible to change the default behavior of each parameter by passing a
+C< $param_name.'_resolve_strategy' > parameter when currying a class generator, with values of either
 C<merge> or C<replace>.
 
 Example:
