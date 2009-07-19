@@ -13,16 +13,6 @@ requires qw/
 #                       forced to do it globally.
 with 'CatalystX::DynamicComponent' => {
     name => '_setup_dynamic_model',
-    methods => {
-        COMPONENT => sub {
-            my ($component_class_name, $app, $args) = @_;
-
-            my $class = $args->{class};
-            Class::MOP::load_class($class);
-	    
-            $class->new($args);
-        },
-    },
 };
 
 after 'setup_components' => sub { shift->_setup_dynamic_models(@_); };
@@ -42,8 +32,8 @@ sub _setup_dynamic_models {
         if (my $exc = $myconfig->{exclude}) {
             next if $model_name =~ /$exc/;
         }
-        $app->_setup_dynamic_model( $model_name, 
-            $app->_setup_dynamic_model_config( $model_name, 
+        $app->_setup_dynamic_model( $model_name,
+            $app->_setup_dynamic_model_config( $model_name,
                 Catalyst::Utils::merge_hashes($myconfig, $config->{$model_name}) )
         );
     }
