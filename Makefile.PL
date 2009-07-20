@@ -20,6 +20,9 @@ requires 'Moose::Autobox' => undef; # ->flatten
 requires 'List::MoreUtils';
 
 test_requires 'Catalyst::Model::Adaptor' => '0.04';
+test_requires 'Catalyst::Model::DBIC::Schema';
+test_requires 'MooseX::Types::Common';
+test_requires 'Catalyst::Engine::Stomp' => '0.06';
 
 author_requires 'Test::Pod';
 author_requires 'Test::EOL';
